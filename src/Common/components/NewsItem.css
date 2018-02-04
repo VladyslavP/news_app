@@ -1,0 +1,31 @@
+.animatedBlock{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: all ease 0.4s;
+    padding-top: 20px;
+    color: black;
+}
+
+.animatedBlock:hover{
+   background: rgba(0, 0, 0, 0.4);
+    color: white;
+}
+
+.animatedBlock:hover .animatedTextBox{
+    margin-top: 0;
+    opacity: 1;
+    transition: all ease 0.5s;
+    color: white;
+}
+
+.animatedTextBox{
+    margin-top: 40px;
+    opacity: 0;
+    color: white;
+    font-size: 12px;
+    padding: 10px;
+}
