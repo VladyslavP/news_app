@@ -1,5 +1,4 @@
 export default function removeArticleFromStorage(id) {
-    alert('vser');
     const articles = JSON.parse(localStorage.getItem("articles"));
     const { [id]: elementToDelete, ...rest } = articles;
     console.log(rest);

@@ -6,9 +6,6 @@ import {StyleSheet, css} from 'aphrodite/no-important';
 import * as colors from '../constants/colors';
 import './NewsItem.css';
 
-
-
-
 class NewsItem extends Component{
 
 

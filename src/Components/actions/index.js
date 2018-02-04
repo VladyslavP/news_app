@@ -1,4 +1,5 @@
 import * as news from './news';
+import * as modal from './modal';
 
 
-export default {news}
+export default {news, modal}

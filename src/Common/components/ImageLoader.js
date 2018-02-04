@@ -1,9 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet, css } from 'aphrodite/no-important';
 
-
-
-
 class ImageLoader extends Component{
 
     render(){

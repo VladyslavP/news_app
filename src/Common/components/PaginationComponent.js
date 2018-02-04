@@ -29,7 +29,6 @@ class PaginationComponent extends Component{
         }
     }
 
-
     makeActive(index){
         this.setState({
             active: index
@@ -93,8 +92,6 @@ class PaginationComponent extends Component{
             </ul>
         )
     }
-
-
 }
 
 const styles = StyleSheet.create({

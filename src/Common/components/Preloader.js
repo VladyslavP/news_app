@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {StyleSheet, css} from "aphrodite/no-important";
 
-
-
 const Preloader = () => {
     return (
         <span className={css(styles.rainbow) + ' ' + css(styles.default)}></span>

@@ -49,6 +49,9 @@ class Main extends Component{
                     setTimeout(() => {
                         removeDataFromStorage('news');
                     }, 1200000);
+                })
+                .catch(() => {
+                    this.props.toggleModal(true);
                 });
         } else {
             const news = JSON.parse(data.news);
@@ -59,6 +62,9 @@ class Main extends Component{
             this.props.getNewsFromLocalStorage(news)
                 .then(() => {
                     this.filterNews();
+                })
+                .catch(() => {
+                    this.props.toggleModal(true);
                 });
             setTimeout(() => {
                 removeDataFromStorage('news');
@@ -184,12 +190,13 @@ class Main extends Component{
 
     render(){
         const { filters, filteredNews, page } = this.state;
+        const { modal } = this.props;
         return (
-
             <main className={css(styles.wrapper)}>
-
-                <ModalError/>
-
+                <ModalError
+                    active={modal}
+                    toggleModal={this.props.toggleModal}
+                />
                 <Route exact path="/" render={() => <MainPageComponent
                     handleFilter={this.handleFilter}
                     handleRemove={this.handleRemove}
@@ -198,16 +205,15 @@ class Main extends Component{
                     handleChangePage={this.handleChangePage}
                     page={page}
                 />}/>
-
                 <Route path="/news" render={() => <NewsPageComponent
                         getParticularNews={this.props.getParticularNews}
                         getArticlesFromLocalStorage={this.props.getArticlesFromLocalStorage}
                         getSortedArticles={this.props.getSortedArticles}
+                        toggleModal={this.props.toggleModal}
                         filteredNews={filteredNews}
                         page={page}
-                    />
-
-                }/>
+                    />}
+                />
             </main>
         );
     }
@@ -238,7 +244,8 @@ const mapDispatchToProps = (dispatch) => {
         getNews: () => dispatch(actions.news.getNews()),
         getNewsFromLocalStorage: (news) => dispatch(actions.news.getNewsFromLocalStorage(news)),
         getParticularNews: (news, id) => dispatch(actions.news.getParticularNews(news, id)),
-        getArticlesFromLocalStorage: (articles, id) => dispatch(actions.news.getArticlesFromLocalStorage(articles, id))
+        getArticlesFromLocalStorage: (articles, id) => dispatch(actions.news.getArticlesFromLocalStorage(articles, id)),
+        toggleModal: (value) => dispatch(actions.modal.toggleModal(value))
     }
 };
 

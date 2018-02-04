@@ -9,7 +9,8 @@ const rootReducer = combineReducers({
     routing: routerReducer,
     form: formReducer,
     news: Components.reducers.news,
-    articles: Components.reducers.articles
+    articles: Components.reducers.articles,
+    modal: Components.reducers.modal
 });
 
 

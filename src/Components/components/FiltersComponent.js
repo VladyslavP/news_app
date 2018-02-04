@@ -20,7 +20,6 @@ class FiltersComponent extends Component{
             return;
         } else {
             this.props.handleFilter(target.value, type);
-            console.log(this.category);
         }
     }
 
@@ -29,9 +28,7 @@ class FiltersComponent extends Component{
     }
 
     render(){
-
         const {handleSubmit, filters} = this.props;
-
         return (
             <aside className={css(styles.formWrapper)}>
                 <form onSubmit={handleSubmit} className={css(styles.formStyle)}>

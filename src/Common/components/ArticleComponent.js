@@ -31,10 +31,10 @@ class ArticleComponent extends Component{
     }
 
     render(){
-        const { articles,filterBy } = this.props;
+        const { articles } = this.props;
         return (
             <ul className={css(styles.wrapper)}>
-                {articles.length && articles.map((article, index) => {
+                {articles.length && articles.map((article) => {
                     return (
                         <li key={article.url} className={css(styles.article)}>
                             <ImageLoader

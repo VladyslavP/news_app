@@ -5,7 +5,7 @@ import { StyleSheet, css } from 'aphrodite/no-important';
 
 
 import Common from '../../Common';
-import { articles, particularNews } from "../selectors";
+import { articles } from "../selectors";
 
 const { components: {NewsItem, ArticleComponent}, helpers: {removeArticleFromStorage, saveArticlesToStorage, getDataFromStorage}} = Common;
 
@@ -45,6 +45,9 @@ class NewsPageComponent extends React.Component{
                         removeArticleFromStorage(this.state.id);
                     }, 1200000);
 
+                })
+                .catch(() => {
+                    this.props.toggleModal(true);
                 });
         } else {
             const element = data[news.id];
@@ -54,9 +57,12 @@ class NewsPageComponent extends React.Component{
                     .then((d) => {
                         saveArticlesToStorage(d, news.id, 'latest');
                         setTimeout(() => {
-                            removeArticleFromStorage(news.id);
+                            removeArticleFromStorage(this.state.id);
                         }, 1200000);
 
+                    })
+                    .catch(() => {
+                        this.props.toggleModal(true);
                     });
             } else {
 
@@ -70,11 +76,14 @@ class NewsPageComponent extends React.Component{
                 if(!isInStore){
                     this.props.getArticlesFromLocalStorage(data[news.id].data.latest, news.id)
                         .then(() => {
-                            console.log(data);
+
+                        })
+                        .catch(() => {
+                            this.props.toggleModal(true);
                         });
                 }
                 setTimeout(() => {
-                    removeArticleFromStorage(news.id);
+                    removeArticleFromStorage(this.state.id);
                 }, timeStamp);
             }
 
@@ -86,41 +95,15 @@ class NewsPageComponent extends React.Component{
         });
     }
 
-    removeFromStorage(){
-
-    }
-
     componentWillReceiveProps(props){
         if(Object.keys(props.articles).length){
             const news = props.location.state.news;
-            console.log(props);
-            console.log(news);
             this.filterArticleById(props.articles, news.id, 'latest');
-
-
-
-            //
-            // if(!!isTop){
-            //     this.setState({
-            //         top: false
-            //     });
-            // } else if(!!isLatest){
-            //     this.setState({
-            //         publishedAt: false
-            //     });
-            // } else if(!!isPopular){
-            //     this.setState({
-            //         popular: false
-            //     });
-            // }
         }
     }
 
     filterArticleById(articles, id, type){
-
-
         const filterType = type;
-
         const isExist = articles[id];
         if(Object.keys(articles).length === 0 || !isExist){
             return [];
@@ -129,31 +112,7 @@ class NewsPageComponent extends React.Component{
                 view: articles[id][filterType]
             });
         }
-
-        // console.log(articles);
-        // const filteredArticlesById = articles[id][this.state.filterBy].filter((item) => item.source.id === id);
-        // return filteredArticlesById;
-
     }
-
-    filterArticlesByType(articles){
-
-        const filterBy = this.state.filterBy;
-
-        if(filterBy === 'latest') {
-            return articles;
-        }
-        if(filterBy === 'popularity'){
-            this.props.getSortedArticlesBy(this.state.id, filterBy);
-        }else {
-            return articles;
-        }
-
-
-    }
-
-
-
     getParticularNews(item){
         const data = getDataFromStorage('articles');
         const element = data[item.id];
@@ -165,35 +124,33 @@ class NewsPageComponent extends React.Component{
                 .then((data) => {
                     saveArticlesToStorage(data, item.id, 'latest');
                     this.filterArticleById(this.props.articles, item.id, 'latest');
+                })
+                .catch(() => {
+                    this.props.toggleModal(true);
                 });
         } else if(element && !elementInStore){
             this.props.getArticlesFromLocalStorage(element.data[this.state.filterType], item.id)
                 .then(() => {
                     this.filterArticleById(this.props.articles, item.id, 'latest');
+                })
+                .catch(() => {
+                    this.props.toggleModal(true);
                 });
         } else {
-
             this.filterArticleById(this.props.articles, item.id, 'latest');
         }
+
         this.setState({
             id: item.id
         });
-
-
-
     }
 
 
     filterBy(type){
         const data = getDataFromStorage('articles');
-        console.log(data);
         const element = data[this.state.id].data[type];
-        console.log(element);
 
         if(type === 'latest') {
-            if(element){
-
-            }
             this.filterArticleById(this.props.articles, this.state.id, 'latest');
         }
 
@@ -207,6 +164,9 @@ class NewsPageComponent extends React.Component{
                     .then((data) => {
                         saveArticlesToStorage(data, this.state.id, 'top');
                         this.filterArticleById(this.props.articles, this.state.id, 'top');
+                    })
+                    .catch(() => {
+                        this.props.toggleModal(true);
                     });
             }
         }
@@ -220,6 +180,9 @@ class NewsPageComponent extends React.Component{
                     .then((data) => {
                         saveArticlesToStorage(data, this.state.id, 'popularity');
                         this.filterArticleById(this.props.articles, this.state.id, 'popularity');
+                    })
+                    .catch(() => {
+                        this.props.toggleModal(true);
                     });
             }
         } else {
@@ -237,28 +200,50 @@ class NewsPageComponent extends React.Component{
 
 
     render(){
-        const { filteredNews=[]} = this.props;
+        const { filteredNews=[] } = this.props;
         const { top, publishedAt,  popular, view } = this.state;
 
         return (
             <div className={css(styles.newsWrapper)}>
                 <div className={css(styles.news)}>
-                    {filteredNews.length && this.joinNews().map((item, index) => <NewsItem className={css(styles.newsItem) + ` ${item.id === this.state.id ? css(styles.active) : null}`} onClick={() => this.getParticularNews(item)} key={index} value={item}/>)}
+                    {filteredNews.length && this.joinNews().map((item, index) =>
+                        <NewsItem
+                            className={css(styles.newsItem) + ` ${item.id === this.state.id ? css(styles.active) : null}`}
+                            onClick={() => this.getParticularNews(item)}
+                            key={index}
+                            value={item}/>
+                    )}
                 </div>
                 <div style={{flex: 4}}>
                     <div className={css(styles.sortBlock)}>
                         <p className={css(styles.buttonsWrapper)}>
-                            <button className={css(styles.buttonFilter) + ` ${publishedAt ? css(styles.disabled) : null}`} disabled={publishedAt} onClick={() => this.filterBy('latest')}>Latest</button>
-                            <button className={css(styles.buttonFilter) + ` ${top ? css(styles.disabled) : null}`} disabled={top} onClick={() => this.filterBy('top')}>Top</button>
-                            <button className={css(styles.buttonFilter) + ` ${popular ? css(styles.disabled) : null}`} disabled={popular} onClick={() => this.filterBy('popularity')}>Popular</button>
+                            <button
+                                className={css(styles.buttonFilter) + ` ${publishedAt ? css(styles.disabled) : null}`}
+                                disabled={publishedAt}
+                                onClick={() => this.filterBy('latest')}
+                            >
+                                Latest
+                            </button>
+                            <button
+                                className={css(styles.buttonFilter) + ` ${top ? css(styles.disabled) : null}`}
+                                disabled={top}
+                                onClick={() => this.filterBy('top')}
+                            >
+                                Top
+                            </button>
+                            <button
+                                className={css(styles.buttonFilter) + ` ${popular ? css(styles.disabled) : null}`}
+                                disabled={popular}
+                                onClick={() => this.filterBy('popularity')}
+                            >
+                                Popular
+                            </button>
                         </p>
                     </div>
-
-                    {/*<h1>{this.filterArticleById(articles, id).length}</h1>*/}
-                    {view.length &&
-                    <ArticleComponent
-                        articles={view}
-                    /> || null
+                    {(view.length &&
+                        <ArticleComponent
+                            articles={view}
+                        /> )|| null
                     }
                 </div>
             </div>

@@ -3,9 +3,7 @@ import { StyleSheet, css } from 'aphrodite/no-important';
 
 import Common from '../../Common';
 
-
 const {  components: { NewsItem, PaginationComponent } } = Common;
-
 
 class NewsComponent extends Component{
 
@@ -13,7 +11,6 @@ class NewsComponent extends Component{
     handleChangePage = (i) => {
         this.props.handleChangePage(i);
     }
-
 
     render(){
         const { page, filteredNews} = this.props;
