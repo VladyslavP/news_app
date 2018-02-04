@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './App.css';
 import { Switch } from 'react-router';
 
 import Main from './Components/components/MainRouter';

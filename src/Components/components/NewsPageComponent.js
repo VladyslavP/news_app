@@ -315,7 +315,9 @@ const styles = StyleSheet.create({
         boxShadow: '0 0 10px rgba(0, 0, 0, .4)'
     },
     activeSection: {
-        fontSize: 16
+        fontSize: 16,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        color: 'white'
     },
     noarticles: {
         textAlign: 'center'

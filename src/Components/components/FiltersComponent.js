@@ -44,6 +44,7 @@ class FiltersComponent extends Component{
             <aside className={css(styles.formWrapper)}>
                 <h2 className={css(styles.title)}>News app</h2>
                 <form onSubmit={handleSubmit} className={css(styles.formStyle)}>
+                    <h3>Apply filters:</h3>
                     <FilterList
                         name={'category'}
                         value={this.state.category}
