@@ -1,18 +1,23 @@
-export default function saveArticlesToStorage(data, id){
+export default function saveArticlesToStorage(art, id, type){
     const articles = JSON.parse(localStorage.getItem('articles'));
 
     if(!articles){
-        const dataToSave = JSON.stringify({[id]: {data:data, timeStamp: new Date().getTime()}});
+        const dataToSave = JSON.stringify({[id]: {data: {[type]: art}, timeStamp: new Date().getTime()}});
         localStorage.setItem("articles", dataToSave);
     } else {
-        articles[id] = {data:data, timeStamp: new Date().getTime()};
-        const newData = JSON.stringify(articles);
-
-        localStorage.removeItem("articles");
-        localStorage.setItem("articles", newData);
+        const elem = articles[id];
+        if(!elem){
+            const dataToSave = {[id]: {data: {[type]: art}, timeStamp: new Date().getTime()}};
+            const newArticles = JSON.stringify({...articles, ...dataToSave});
+            localStorage.removeItem("articles");
+            localStorage.setItem("articles", newArticles);
+        } else {
+            const { [id]: elementToChange } = articles;
+            elementToChange.data[type] = art;
+            const newElement = JSON.stringify({...articles, ...{ [id]: elementToChange}});
+            localStorage.removeItem("articles");
+            localStorage.setItem("articles", newElement);
+        }
     }
 
-    //
-    // const data = {news: JSON.stringify(news), timeStamp: new Date().getTime()};
-    // localStorage.setItem(key, JSON.stringify(data));
 }

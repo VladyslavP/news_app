@@ -9,10 +9,10 @@ import MainPageComponent from './MainPageComponent';
 import NewsPageComponent from './NewsPageComponent';
 import * as selectors from "../selectors";
 
-
-const { helpers: {saveDataToStorage, getDataFromStorage, removeDataFromStorage} } = Common;
-
-
+const {
+    helpers: { saveDataToStorage, getDataFromStorage, removeDataFromStorage },
+    components: {ModalError}
+} = Common;
 
 class Main extends Component{
 
@@ -187,6 +187,9 @@ class Main extends Component{
         return (
 
             <main className={css(styles.wrapper)}>
+
+                <ModalError/>
+
                 <Route exact path="/" render={() => <MainPageComponent
                     handleFilter={this.handleFilter}
                     handleRemove={this.handleRemove}
@@ -199,6 +202,7 @@ class Main extends Component{
                 <Route path="/news" render={() => <NewsPageComponent
                         getParticularNews={this.props.getParticularNews}
                         getArticlesFromLocalStorage={this.props.getArticlesFromLocalStorage}
+                        getSortedArticles={this.props.getSortedArticles}
                         filteredNews={filteredNews}
                         page={page}
                     />
@@ -209,7 +213,6 @@ class Main extends Component{
     }
 
 }
-
 
 const styles = StyleSheet.create({
     wrapper: {
@@ -225,15 +228,17 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        news: selectors.news(state)
-    }
+        news: selectors.news(state),
+        modal: selectors.modal(state)
+    };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
+        getSortedArticles: (id, type) => dispatch(actions.news.getSortedArticles(id, type)),
         getNews: () => dispatch(actions.news.getNews()),
         getNewsFromLocalStorage: (news) => dispatch(actions.news.getNewsFromLocalStorage(news)),
-        getParticularNews: (news) => dispatch(actions.news.getParticularNews(news)),
-        getArticlesFromLocalStorage: (articles) => dispatch(actions.news.getArticlesFromLocalStorage(articles))
+        getParticularNews: (news, id) => dispatch(actions.news.getParticularNews(news, id)),
+        getArticlesFromLocalStorage: (articles, id) => dispatch(actions.news.getArticlesFromLocalStorage(articles, id))
     }
 };
 

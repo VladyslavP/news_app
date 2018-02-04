@@ -24,20 +24,19 @@ class ArticleComponent extends Component{
         const monthIndex = published.getMonth();
         const year = published.getFullYear();
         const hours = published.getHours();
-        const minutes = published.getMinutes() < 9 ? '0' + published.getMinutes() : published.getMinutes();
+        const minutes = published.getMinutes() <= 9 ? '0' + published.getMinutes() : published.getMinutes();
 
 
         return `${day} ${monthNames[monthIndex]} ${year} ${hours}:${minutes}`;
     }
 
     render(){
-        const { articles } = this.props;
-        console.log(articles);
+        const { articles,filterBy } = this.props;
         return (
             <ul className={css(styles.wrapper)}>
-                {articles.map((article, index) => {
+                {articles.length && articles.map((article, index) => {
                     return (
-                        <li key={index} className={css(styles.article)}>
+                        <li key={article.url} className={css(styles.article)}>
                             <ImageLoader
                                 src={article.urlToImage}
                                 defaultImage={defaultImage}

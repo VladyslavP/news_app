@@ -1,6 +1,7 @@
-export function removeArticleFromStorage(article) {
+export default function removeArticleFromStorage(id) {
+    alert('vser');
     const articles = JSON.parse(localStorage.getItem("articles"));
-    const newArticles = JSON.stringify(articles.filter((art) => art.id !== article.id));
-    localStorage.removeItem('articles');
-    localStorage.setItem("articles", newArticles);
+    const { [id]: elementToDelete, ...rest } = articles;
+    console.log(rest);
+    localStorage.setItem("articles", JSON.stringify(rest));
 }

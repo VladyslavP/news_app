@@ -7,7 +7,7 @@ import { StyleSheet, css } from 'aphrodite/no-important';
 import Common from '../../Common';
 import { articles, particularNews } from "../selectors";
 
-const { components: {NewsItem, ArticleComponent}, helpers: {removeArticleFromStorage, saveArticlesToStorage, getDataFromStorage, removeDataFromStorage}} = Common;
+const { components: {NewsItem, ArticleComponent}, helpers: {removeArticleFromStorage, saveArticlesToStorage, getDataFromStorage}} = Common;
 
 
 
@@ -18,16 +18,17 @@ class NewsPageComponent extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            top: true,
-            publishedAt: true,
-            popular: true,
-            filterBy: null,
-            id: null
+            top: false,
+            publishedAt: false,
+            popular: false,
+            filterType: 'latest',
+            id: null,
+            view: []
         };
 
         this.filterBy = this.filterBy.bind(this);
         this.getParticularNews = this.getParticularNews.bind(this);
-        this.setToStateArticlesById = this.setToStateArticlesById.bind(this);
+        this.filterArticleById = this.filterArticleById.bind(this);
 
     }
 
@@ -36,98 +37,115 @@ class NewsPageComponent extends React.Component{
         const news = this.props.location.state.news;
 
 
-
-
         if (!data) {
-
-            this.props.getParticularNews(news)
+            this.props.getParticularNews(news, news.id)
                 .then((data) => {
-                    saveArticlesToStorage(data, news.id);
+                    saveArticlesToStorage(data, news.id, 'latest');
                     setTimeout(() => {
-                        removeDataFromStorage('articles');
+                        removeArticleFromStorage(this.state.id);
                     }, 1200000);
+
                 });
         } else {
             const element = data[news.id];
-
-
             if(!element){
 
-                this.props.getParticularNews(news)
+                this.props.getParticularNews(news, news.id)
                     .then((d) => {
-                        saveArticlesToStorage(d, news.id);
+                        saveArticlesToStorage(d, news.id, 'latest');
                         setTimeout(() => {
-                            removeArticleFromStorage(news);
+                            removeArticleFromStorage(news.id);
                         }, 1200000);
+
                     });
             } else {
 
                 const delta = new Date().getTime() - element.timeStamp;
                 const timeStamp = (delta >= 1200000) ? 0 : 1200000 - delta;
-                const isInStore = this.setToStateArticlesById(this.props.articles, news.id).length;
+                const isInStore = Object.keys(this.props.articles).length && this.props.articles[news.id]['latest'].length;
+                const elementToView = data[news.id].data['latest'];
+                this.setState({
+                    view: elementToView
+                });
                 if(!isInStore){
-                    this.props.getArticlesFromLocalStorage(data[news.id].data);
+                    this.props.getArticlesFromLocalStorage(data[news.id].data.latest, news.id)
+                        .then(() => {
+                            console.log(data);
+                        });
                 }
                 setTimeout(() => {
-                    removeDataFromStorage('articles');
+                    removeArticleFromStorage(news.id);
                 }, timeStamp);
             }
 
 
         }
+
         this.setState({
             id: news.id
         });
     }
 
+    removeFromStorage(){
+
+    }
+
     componentWillReceiveProps(props){
-        if(props.articles.length){
-            const isTop = props.articles[0].top;
-            const isLatest = props.articles[0]['publishedAt'];
-            const isPopular = props.articles[0]['popular'];
+        if(Object.keys(props.articles).length){
+            const news = props.location.state.news;
+            console.log(props);
+            console.log(news);
+            this.filterArticleById(props.articles, news.id, 'latest');
 
 
-            if(!!isTop){
-                this.setState({
-                    top: false
-                });
-            } else if(!!isLatest){
-                this.setState({
-                    publishedAt: false
-                });
-            } else if(!!isPopular){
-                this.setState({
-                    popular: false
-                });
-            }
-            this.setToStateArticlesById(props.articles);
+
+            //
+            // if(!!isTop){
+            //     this.setState({
+            //         top: false
+            //     });
+            // } else if(!!isLatest){
+            //     this.setState({
+            //         publishedAt: false
+            //     });
+            // } else if(!!isPopular){
+            //     this.setState({
+            //         popular: false
+            //     });
+            // }
         }
     }
 
-    setToStateArticlesById(articles, id){
-        const filteredArticlesById = articles.filter((item) => item.source.id === id);
-        return filteredArticlesById;
+    filterArticleById(articles, id, type){
+
+
+        const filterType = type;
+
+        const isExist = articles[id];
+        if(Object.keys(articles).length === 0 || !isExist){
+            return [];
+        } else {
+            this.setState({
+                view: articles[id][filterType]
+            });
+        }
+
+        // console.log(articles);
+        // const filteredArticlesById = articles[id][this.state.filterBy].filter((item) => item.source.id === id);
+        // return filteredArticlesById;
 
     }
 
-    filterArticles(articles){
+    filterArticlesByType(articles){
 
         const filterBy = this.state.filterBy;
 
-        if(filterBy === 'publishedAt'){
-            return articles.sort((a, b) => {
-                let first = new Date(a.publishedAt);
-                let second = new Date(b.publishedAt);
-                if (first > second) {
-                    return -1;
-                } else if (first < second) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-
-            });
-        } else {
+        if(filterBy === 'latest') {
+            return articles;
+        }
+        if(filterBy === 'popularity'){
+            this.props.getSortedArticlesBy(this.state.id, filterBy);
+        }else {
             return articles;
         }
 
@@ -139,16 +157,23 @@ class NewsPageComponent extends React.Component{
     getParticularNews(item){
         const data = getDataFromStorage('articles');
         const element = data[item.id];
-        const elem = this.setToStateArticlesById(this.props.articles, item.id);
+        const elementInStore = this.props.articles[item.id];
 
-        if(!element && elem.length === 0){
-            this.props.getParticularNews(item)
+        if(!element && !elementInStore){
+
+            this.props.getParticularNews(item, item.id)
                 .then((data) => {
-                    saveArticlesToStorage(data, item.id);
+                    saveArticlesToStorage(data, item.id, 'latest');
+                    this.filterArticleById(this.props.articles, item.id, 'latest');
                 });
-        } else if(element && elem.length === 0){
+        } else if(element && !elementInStore){
+            this.props.getArticlesFromLocalStorage(element.data[this.state.filterType], item.id)
+                .then(() => {
+                    this.filterArticleById(this.props.articles, item.id, 'latest');
+                });
+        } else {
 
-            this.props.getArticlesFromLocalStorage(element.data);
+            this.filterArticleById(this.props.articles, item.id, 'latest');
         }
         this.setState({
             id: item.id
@@ -160,9 +185,46 @@ class NewsPageComponent extends React.Component{
 
 
     filterBy(type){
-        this.setState({
-            filterBy: type
-        });
+        const data = getDataFromStorage('articles');
+        console.log(data);
+        const element = data[this.state.id].data[type];
+        console.log(element);
+
+        if(type === 'latest') {
+            if(element){
+
+            }
+            this.filterArticleById(this.props.articles, this.state.id, 'latest');
+        }
+
+        if(type === 'top'){
+            if(element){
+                this.setState({
+                    view: element
+                });
+            } else {
+                this.props.getSortedArticles(this.state.id, 'top')
+                    .then((data) => {
+                        saveArticlesToStorage(data, this.state.id, 'top');
+                        this.filterArticleById(this.props.articles, this.state.id, 'top');
+                    });
+            }
+        }
+        if(type === 'popularity'){
+            if(element){
+                this.setState({
+                    view: element
+                });
+            } else {
+                this.props.getSortedArticles(this.state.id, 'popularity')
+                    .then((data) => {
+                        saveArticlesToStorage(data, this.state.id, 'popularity');
+                        this.filterArticleById(this.props.articles, this.state.id, 'popularity');
+                    });
+            }
+        } else {
+            return articles;
+        }
     }
 
 
@@ -175,8 +237,8 @@ class NewsPageComponent extends React.Component{
 
 
     render(){
-        const { filteredNews=[], page, articles=[]} = this.props;
-        const { top, publishedAt,  popular, id } = this.state;
+        const { filteredNews=[]} = this.props;
+        const { top, publishedAt,  popular, view } = this.state;
 
         return (
             <div className={css(styles.newsWrapper)}>
@@ -184,19 +246,20 @@ class NewsPageComponent extends React.Component{
                     {filteredNews.length && this.joinNews().map((item, index) => <NewsItem className={css(styles.newsItem) + ` ${item.id === this.state.id ? css(styles.active) : null}`} onClick={() => this.getParticularNews(item)} key={index} value={item}/>)}
                 </div>
                 <div style={{flex: 4}}>
-                    {articles.length &&
-                        <div className={css(styles.sortBlock)}>
-                            <p className={css(styles.buttonsWrapper)}>
-                                <button className={css(styles.buttonFilter) + ` ${publishedAt ? css(styles.disabled) : null}`} disabled={publishedAt} onClick={() => this.filterBy('publishedAt')}>Latest</button>
-                                <button className={css(styles.buttonFilter) + ` ${top ? css(styles.disabled) : null}`} disabled={top} onClick={() => this.filterBy('top')}>Top</button>
-                                <button className={css(styles.buttonFilter) + ` ${popular ? css(styles.disabled) : null}`} disabled={popular} onClick={() => this.filterBy('popular')}>Popular</button>
-                            </p>
-                        </div> || null
-                    }
-                    <h1>{this.setToStateArticlesById(articles, id).length}</h1>
+                    <div className={css(styles.sortBlock)}>
+                        <p className={css(styles.buttonsWrapper)}>
+                            <button className={css(styles.buttonFilter) + ` ${publishedAt ? css(styles.disabled) : null}`} disabled={publishedAt} onClick={() => this.filterBy('latest')}>Latest</button>
+                            <button className={css(styles.buttonFilter) + ` ${top ? css(styles.disabled) : null}`} disabled={top} onClick={() => this.filterBy('top')}>Top</button>
+                            <button className={css(styles.buttonFilter) + ` ${popular ? css(styles.disabled) : null}`} disabled={popular} onClick={() => this.filterBy('popularity')}>Popular</button>
+                        </p>
+                    </div>
+
+                    {/*<h1>{this.filterArticleById(articles, id).length}</h1>*/}
+                    {view.length &&
                     <ArticleComponent
-                        articles={this.filterArticles(this.setToStateArticlesById(articles, id))}
-                    />
+                        articles={view}
+                    /> || null
+                    }
                 </div>
             </div>
         );
@@ -247,7 +310,8 @@ const styles = StyleSheet.create({
     },
     active: {
         backgroundColor: 'red'
-    }
+    },
+
 });
 
 

@@ -24,7 +24,8 @@ export function getNews() {
     }
 }
 
-export function getParticularNews(data) {
+export function getParticularNews(data, id) {
+    console.log(data);
     return (dispatch) => {
         dispatch(actionCreator(actionType.REQUEST_BEGIN));
         const url = `/everything?sources=${data.id}&`;
@@ -32,7 +33,7 @@ export function getParticularNews(data) {
         return getDataAction(url)
             .then((data) => {
 
-                dispatch(actionCreator(actionType.SUCCESS_GET_PARTICULAR_NEWS, {articles: data.articles}));
+                dispatch(actionCreator(actionType.SUCCESS_GET_PARTICULAR_NEWS, {id: id, articles: data.articles}));
                 dispatch(actionCreator(actionType.REQUEST_END));
                 return Promise.resolve(data.articles);
             })
@@ -52,10 +53,38 @@ export function getNewsFromLocalStorage(news) {
     }
 }
 
-export function getArticlesFromLocalStorage(articles) {
+export function getArticlesFromLocalStorage(articles,id) {
     return (dispatch) => {
-        dispatch(actionCreator(actionType.SUCCESS_GET_PARTICULAR_NEWS, {articles}));
+        dispatch(actionCreator(actionType.SUCCESS_GET_PARTICULAR_NEWS, {articles, id}));
         return Promise.resolve();
     }
+}
+
+export function getSortedArticles(id, sortBy) {
+
+    return (dispatch) => {
+        dispatch(actionCreator(actionType.REQUEST_BEGIN));
+        const url = `/everything?sources=${id}&sortBy=${sortBy}&`;
+        return getDataAction(url)
+            .then((data) => {
+                dispatch(actionCreator(actionType.REQUEST_BEGIN));
+                dispatch(actionCreator(actionType.SUCCESS_GET_SORTED_ARTICLES, {articles: data.articles, id: id, sortBy: sortBy}));
+                return Promise.resolve(data.articles);
+            });
+        //         // dispatch(actionCreator(actionType.REQUEST_END));
+        //         return Promise.resolve(data.articles);
+        //     })
+        //     .catch((error) => {
+        //         dispatch(actionCreator(actionType.REQUEST_END));
+        //
+        //         return Promise.reject(error)
+        //     });
+    }
+
+
+}
+
+export function addTypeToArticle(id, sortBy) {
+
 }
 

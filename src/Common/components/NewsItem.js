@@ -24,6 +24,7 @@ class NewsItem extends Component{
 
     render(){
         const {value} = this.props;
+
         return (
           <div className={css(styles.newsItem) + ` ${this.props.className}`} onClick={this.props.onClick}>
               <div className="animatedBlock">

@@ -3,6 +3,7 @@ import config from '../../Utils';
 
 
 export function actionCreator(actionType, data = {}) {
+    console.log(actionType);
     return {
         type: actionType,
         ...data
