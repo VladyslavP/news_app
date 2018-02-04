@@ -34,9 +34,9 @@ class ArticleComponent extends Component{
         const { articles } = this.props;
         return (
             <ul className={css(styles.wrapper)}>
-                {articles.length && articles.map((article) => {
+                {articles.length && articles.map((article, index) => {
                     return (
-                        <li key={article.url} className={css(styles.article)}>
+                        <li key={`${article.urlToImage}${index}${article.publishedAt}`} className={css(styles.article)}>
                             <ImageLoader
                                 src={article.urlToImage}
                                 defaultImage={defaultImage}

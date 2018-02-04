@@ -1,9 +1,6 @@
 import { actionCreator, getDataAction} from '../../Common/actions';
 import * as actionType from '../actionTypes'
 
-
-
-
 export function getNews() {
     return (dispatch) => {
         dispatch(actionCreator(actionType.REQUEST_BEGIN));
@@ -64,27 +61,21 @@ export function getSortedArticles(id, sortBy) {
 
     return (dispatch) => {
         dispatch(actionCreator(actionType.REQUEST_BEGIN));
-        const url = `/everything?sources=${id}&sortBy=${sortBy}&`;
+        let url;
+        if(sortBy === 'top'){
+            url = `/top-headlines?sources=${id}&`;
+        } else {
+            url = `/everything?sources=${id}&sortBy=${sortBy}&`;
+        }
         return getDataAction(url)
             .then((data) => {
                 dispatch(actionCreator(actionType.REQUEST_BEGIN));
                 dispatch(actionCreator(actionType.SUCCESS_GET_SORTED_ARTICLES, {articles: data.articles, id: id, sortBy: sortBy}));
                 return Promise.resolve(data.articles);
             });
-        //         // dispatch(actionCreator(actionType.REQUEST_END));
-        //         return Promise.resolve(data.articles);
-        //     })
-        //     .catch((error) => {
-        //         dispatch(actionCreator(actionType.REQUEST_END));
-        //
-        //         return Promise.reject(error)
-        //     });
     }
 
 
 }
 
-export function addTypeToArticle(id, sortBy) {
-
-}
 

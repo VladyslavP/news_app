@@ -6,7 +6,9 @@ class FilterList extends Component{
     render(){
         const {list = [], elementStyle} = this.props;
         return (
-            list.map((item, index) => <option value={item} key={index} className={`${elementStyle} ${css(styles.item)}`}>{item}</option>)
+            <select {...this.props}>
+                {list.map((item, index) => <option value={item} key={index} className={`${elementStyle} ${css(styles.item)}`}>{item}</option>)}
+            </select>
         );
     }
 

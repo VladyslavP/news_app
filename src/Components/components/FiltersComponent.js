@@ -1,29 +1,40 @@
 import React, { Component } from 'react';
-import { reduxForm, Field } from 'redux-form';
 import { StyleSheet, css } from 'aphrodite/no-important';
 
 
 import Common from '../../Common/index'
 
-const { components: { FilterList }, constants: { categories, formNames, languages, countries } } = Common;
-
-
-
-
+const { components: { FilterList }, constants: { categories, languages, countries } } = Common;
 
 class FiltersComponent extends Component{
 
+    constructor(props){
+        super(props);
+        this.state = {
+            category: 'select category',
+            language: 'select language',
+            countries: 'select countries'
+        };
+        this.handleRemove = this.handleRemove.bind(this);
+        this.handleFilter = this.handleFilter.bind(this);
+    }
 
     handleFilter(target, type){
 
         if(target.value === categories.SELECT_CATEGORY || target.value === countries.SELECT_COUNTRY || target.value ===languages.SELECT_LANGUAGE){
             return;
         } else {
+            this.setState({
+                [type]: target.value
+            });
             this.props.handleFilter(target.value, type);
         }
     }
 
     handleRemove(type, value){
+        this.setState({
+            [type]: `select ${type}`
+        });
         this.props.handleRemove(type, value);
     }
 
@@ -31,50 +42,43 @@ class FiltersComponent extends Component{
         const {handleSubmit, filters} = this.props;
         return (
             <aside className={css(styles.formWrapper)}>
+                <h2 className={css(styles.title)}>News app</h2>
                 <form onSubmit={handleSubmit} className={css(styles.formStyle)}>
-                    <Field
+                    <FilterList
                         name={'category'}
-                        value={"business"}
+                        value={this.state.category}
                         id={"category"}
-                        ref={(category) => this.category = category}
                         component={'select'}
                         onChange={(e) => this.handleFilter(e.target, 'category', e)}
-                    >
-                        <FilterList
-                            list={categories.CATEGORIES_TYPE}
-                        />
-                    </Field>
+                        list={categories.CATEGORIES_TYPE}
+                    />
                     <div>
                         <ul>
-                            {filters.category && filters.category.map((value, index) => <li key={index}>{value} <span onClick={() => this.handleRemove('category', value)}>Delete</span></li>)}
+                            {filters.category && filters.category.map((value, index) => <li key={index}>{value} <span className={css(styles.deleteButton)} onClick={() => this.handleRemove('category', value)}>x</span></li>)}
                         </ul>
                     </div>
-                    <Field
+                    <FilterList
                         name={'language'}
+                        value={this.state.language}
                         component="select"
                         onChange={(e) => this.handleFilter(e.target, 'language')}
-                    >
-                        <FilterList
-                            list={languages.LANGUAGES}
-                        />
-                    </Field>
+                        list={languages.LANGUAGES}
+                    />
                     <div>
                         <ul>
-                            {filters.language && filters.language.map((value, index) => <li key={index}>{value} <span onClick={() => this.handleRemove('language', value)}>Delete</span></li>)}
+                            {filters.language && filters.language.map((value, index) => <li key={index}>{value} <span className={css(styles.deleteButton)} onClick={() => this.handleRemove('language', value)}>x</span></li>)}
                         </ul>
                     </div>
-                    <Field
+                    <FilterList
+                        value={this.state.countries}
                         name={'countries'}
                         component="select"
                         onChange={(e) => this.handleFilter(e.target, 'country')}
-                    >
-                        <FilterList
-                            list={countries.COUNTRIES}
-                        />
-                    </Field>
+                        list={countries.COUNTRIES}
+                    />
                     <div>
                         <ul>
-                            {filters.country && filters.country.map((value, index) => <li key={index}>{value} <span onClick={() => this.handleRemove('country', value)}>Delete</span></li>)}
+                            {filters.country && filters.country.map((value, index) => <li key={index}>{value} <span className={css(styles.deleteButton)} onClick={() => this.handleRemove('country', value)}>x</span></li>)}
                         </ul>
                     </div>
                 </form>
@@ -87,18 +91,30 @@ class FiltersComponent extends Component{
 const styles = StyleSheet.create({
     formWrapper: {
         flex: 1,
-        paddingLeft: 20
+        paddingLeft: 20,
+        paddingRight: 20,
+        boxShadow: '0 0 10px rgba(0, 0, 0, .4)'
     },
     formStyle: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-around',
-        marginTop:200
+        marginTop:200,
+    },
+    title:{
+        textAlign: 'center',
+        textShadow: '0px 0px 1px black, 0 0 1px black'
+    },
+    deleteButton: {
+        color: 'red',
+       fontWeight: 'bold',
+        cursor: 'pointer'
+
     }
 });
-
-FiltersComponent = reduxForm({
-    form: formNames.FILTER_FORM
-})(FiltersComponent);
+//
+// FiltersComponent = reduxForm({
+//     form: formNames.FILTER_FORM
+// })(FiltersComponent);
 
 export default FiltersComponent;

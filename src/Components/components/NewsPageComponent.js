@@ -68,11 +68,12 @@ class NewsPageComponent extends React.Component{
 
                 const delta = new Date().getTime() - element.timeStamp;
                 const timeStamp = (delta >= 1200000) ? 0 : 1200000 - delta;
-                const isInStore = Object.keys(this.props.articles).length && this.props.articles[news.id]['latest'].length;
+                const isInStore = Object.keys(this.props.articles).length && this.props.articles[news.id] && this.props.articles[news.id]['latest'].length;
                 const elementToView = data[news.id].data['latest'];
                 this.setState({
                     view: elementToView
                 });
+
                 if(!isInStore){
                     this.props.getArticlesFromLocalStorage(data[news.id].data.latest, news.id)
                         .then(() => {
@@ -141,14 +142,15 @@ class NewsPageComponent extends React.Component{
         }
 
         this.setState({
-            id: item.id
+            id: item.id,
+            filterType: 'latest'
         });
     }
 
 
     filterBy(type){
         const data = getDataFromStorage('articles');
-        const element = data[this.state.id].data[type];
+        const element = data[this.state.id] && data[this.state.id].data[type];
 
         if(type === 'latest') {
             this.filterArticleById(this.props.articles, this.state.id, 'latest');
@@ -157,13 +159,17 @@ class NewsPageComponent extends React.Component{
         if(type === 'top'){
             if(element){
                 this.setState({
-                    view: element
+                    view: element,
+                    filterType: type
                 });
             } else {
                 this.props.getSortedArticles(this.state.id, 'top')
                     .then((data) => {
                         saveArticlesToStorage(data, this.state.id, 'top');
                         this.filterArticleById(this.props.articles, this.state.id, 'top');
+                        this.setState({
+                            filterType: type
+                        });
                     })
                     .catch(() => {
                         this.props.toggleModal(true);
@@ -173,19 +179,26 @@ class NewsPageComponent extends React.Component{
         if(type === 'popularity'){
             if(element){
                 this.setState({
-                    view: element
+                    view: element,
+                    filterType: type
                 });
             } else {
                 this.props.getSortedArticles(this.state.id, 'popularity')
                     .then((data) => {
                         saveArticlesToStorage(data, this.state.id, 'popularity');
                         this.filterArticleById(this.props.articles, this.state.id, 'popularity');
+                        this.setState({
+                            filterType: type
+                        });
                     })
                     .catch(() => {
                         this.props.toggleModal(true);
                     });
             }
         } else {
+            this.setState({
+                filterType: type
+            });
             return articles;
         }
     }
@@ -195,6 +208,10 @@ class NewsPageComponent extends React.Component{
         return this.props.location.state.filteredNews.reduce((result, item) => {
             return result.concat(item);
         }, []);
+    }
+
+    isActive(type){
+        return type === this.state.filterType;
     }
 
 
@@ -208,9 +225,11 @@ class NewsPageComponent extends React.Component{
                 <div className={css(styles.news)}>
                     {filteredNews.length && this.joinNews().map((item, index) =>
                         <NewsItem
-                            className={css(styles.newsItem) + ` ${item.id === this.state.id ? css(styles.active) : null}`}
+                            className={css(styles.newsItem) + ` ${item.id === this.state.id ? css(styles.activeSection) : null}`}
                             onClick={() => this.getParticularNews(item)}
                             key={index}
+                            isStatic={item.id === this.state.id}
+                            isButton={false}
                             value={item}/>
                     )}
                 </div>
@@ -218,21 +237,21 @@ class NewsPageComponent extends React.Component{
                     <div className={css(styles.sortBlock)}>
                         <p className={css(styles.buttonsWrapper)}>
                             <button
-                                className={css(styles.buttonFilter) + ` ${publishedAt ? css(styles.disabled) : null}`}
+                                className={css(styles.buttonFilter) + ` ${this.isActive('latest') ? css(styles.active) : null}`}
                                 disabled={publishedAt}
                                 onClick={() => this.filterBy('latest')}
                             >
                                 Latest
                             </button>
                             <button
-                                className={css(styles.buttonFilter) + ` ${top ? css(styles.disabled) : null}`}
+                                className={css(styles.buttonFilter) + ` ${this.isActive('top') ? css(styles.active) : null}`}
                                 disabled={top}
                                 onClick={() => this.filterBy('top')}
                             >
                                 Top
                             </button>
                             <button
-                                className={css(styles.buttonFilter) + ` ${popular ? css(styles.disabled) : null}`}
+                                className={css(styles.buttonFilter) + ` ${this.isActive('popularity') ? css(styles.active) : null}`}
                                 disabled={popular}
                                 onClick={() => this.filterBy('popularity')}
                             >
@@ -240,10 +259,10 @@ class NewsPageComponent extends React.Component{
                             </button>
                         </p>
                     </div>
-                    {(view.length &&
+                    {(view && view.length &&
                         <ArticleComponent
                             articles={view}
-                        /> )|| null
+                        /> )|| <p className={css(styles.noarticles)}>There are no articles...</p>
                     }
                 </div>
             </div>
@@ -275,7 +294,6 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     buttonFilter: {
-        border: '1px solid black',
         width: 100,
         padding:'7px 10px',
         backgroundColor: 'transparent',
@@ -294,8 +312,14 @@ const styles = StyleSheet.create({
 
     },
     active: {
-        backgroundColor: 'red'
+        boxShadow: '0 0 10px rgba(0, 0, 0, .4)'
     },
+    activeSection: {
+        fontSize: 16
+    },
+    noarticles: {
+        textAlign: 'center'
+    }
 
 });
 

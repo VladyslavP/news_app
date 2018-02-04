@@ -20,7 +20,7 @@ class NewsComponent extends Component{
                     <div className={css(styles.wrapperRow)}>
                         {(filteredNews.length && filteredNews[page - 1].map((value, index) => {
                             return (
-                                <NewsItem filteredNews={filteredNews} className={css(styles.news)} value={value} key={index}/>
+                                <NewsItem isButton={true} filteredNews={filteredNews} className={css(styles.news)} value={value} key={index}/>
                             );
                         })) || null}
                     </div>
