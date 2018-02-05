@@ -1,3 +1,3 @@
-export default function removeDataFromStorage(key){
+export default function removeDataFromStorage(key) {
     localStorage.removeItem(key);
 }

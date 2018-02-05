@@ -1,13 +1,12 @@
-import * as actionType from '../actionTypes'
-import {actionCreator} from "../../Common/actions";
+import * as actionType from '../actionTypes';
+import {actionCreator} from '../../Common/actions';
 
 export function toggleModal(value) {
     return (dispatch) => {
-        if(value){
+        if (value) {
             dispatch(actionCreator(actionType.SUCCESS_MODAL_VISIBLE));
         } else {
-            console.log(value);
             dispatch(actionCreator(actionType.SUCCESS_MODAL_HIDDEN));
         }
-    }
+    };
 }

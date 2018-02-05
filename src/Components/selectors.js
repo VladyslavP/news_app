@@ -10,5 +10,5 @@ export function modal(state) {
 }
 
 export function particularNews(state, id) {
-    return state.articles.filter((item) => item.source.id === id);
+    return state.articles.filter(item => item.source.id === id);
 }

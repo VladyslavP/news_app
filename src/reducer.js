@@ -4,7 +4,6 @@ import { reducer as formReducer } from 'redux-form';
 
 import Components from './Components';
 
-
 const rootReducer = combineReducers({
     routing: routerReducer,
     form: formReducer,
@@ -12,7 +11,5 @@ const rootReducer = combineReducers({
     articles: Components.reducers.articles,
     modal: Components.reducers.modal
 });
-
-
 
 export default rootReducer;

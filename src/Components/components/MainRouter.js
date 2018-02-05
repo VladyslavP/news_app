@@ -7,17 +7,15 @@ import Common from '../../Common';
 import actions from '../actions/index';
 import MainPageComponent from './MainPageComponent';
 import NewsPageComponent from './NewsPageComponent';
-import * as selectors from "../selectors";
+import * as selectors from '../selectors';
 
 const {
     helpers: { saveDataToStorage, getDataFromStorage, removeDataFromStorage },
     components: {ModalError}
 } = Common;
 
-class Main extends Component{
-
-
-    constructor(props){
+class Main extends Component {
+    constructor(props) {
         super(props);
         this.state = {
             filters: {
@@ -29,23 +27,19 @@ class Main extends Component{
             paginationSize: null,
             page: 1
         };
-
         this.handleFilter = this.handleFilter.bind(this);
         this.handleRemove = this.handleRemove.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
     }
 
-
-    componentDidMount(){
-
+    componentDidMount() {
         const data = getDataFromStorage('news');
 
-
-        if(!data){
+        if (!data) {
             this.props.getNews()
                 .then((data) => {
                     this.filterNews();
-                    saveDataToStorage("news", data);
+                    saveDataToStorage('news', data);
                     setTimeout(() => {
                         removeDataFromStorage('news');
                     }, 1200000);
@@ -70,11 +64,9 @@ class Main extends Component{
                 removeDataFromStorage('news');
             }, timeStamp);
         }
-
     }
 
-    handleChangePage(page){
-
+    handleChangePage(page) {
         this.setState({
             page
         });
@@ -84,11 +76,7 @@ class Main extends Component{
     filterNews = () => {
         const filters = this.state.filters;
         const news = this.props.news;
-
-
         const filterKeys = Object.keys(filters).filter((item => filters[item].length !== 0));
-
-
         const filtered =  news.filter((item) => {
             return filterKeys.every(key => {
                 return !!(filters[key].indexOf(item[key]) + 1);
@@ -96,27 +84,23 @@ class Main extends Component{
         });
 
         let result = [];
-        for(let i = 0; i < filtered.length; i += 1){
-            if(i % 6 === 0){
+        for(let i = 0; i < filtered.length; i += 1) {
+            if (i % 6 === 0) {
                 result.push(filtered.slice(i, i + 6));
             }
         }
-
 
         this.setState({
             paginationSize: result.length,
             filteredNews: result
         });
+    };
 
-
-    }
-
-
-    handleFilter(value, type){
+    handleFilter(value, type) {
         const isAdded = this.state.filters[type].indexOf(value) + 1;
 
-        if(!isAdded){
-            switch (type){
+        if (!isAdded) {
+            switch (type) {
                 case 'category':
                     this.setState({
                         filters: {
@@ -149,12 +133,10 @@ class Main extends Component{
                 }
             }
         }
-
-
     }
 
-    handleRemove(type, value){
-        switch (type){
+    handleRemove(type, value) {
+        switch (type) {
             case 'category':
                 this.setState({
                     filters: {
@@ -188,7 +170,7 @@ class Main extends Component{
         }
     }
 
-    render(){
+    render() {
         const { filters, filteredNews, page } = this.state;
         const { modal } = this.props;
         return (
@@ -197,7 +179,7 @@ class Main extends Component{
                     active={modal}
                     toggleModal={this.props.toggleModal}
                 />
-                <Route exact path="/" render={() => <MainPageComponent
+                <Route exact path='/' render={() => <MainPageComponent
                     handleFilter={this.handleFilter}
                     handleRemove={this.handleRemove}
                     filters={filters}
@@ -205,7 +187,7 @@ class Main extends Component{
                     handleChangePage={this.handleChangePage}
                     page={page}
                 />}/>
-                <Route path="/news" render={() => <NewsPageComponent
+                <Route path='/news' render={() => <NewsPageComponent
                         getParticularNews={this.props.getParticularNews}
                         getArticlesFromLocalStorage={this.props.getArticlesFromLocalStorage}
                         getSortedArticles={this.props.getSortedArticles}
@@ -217,7 +199,6 @@ class Main extends Component{
             </main>
         );
     }
-
 }
 
 const styles = StyleSheet.create({

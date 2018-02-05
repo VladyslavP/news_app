@@ -5,14 +5,13 @@ import Common from '../../Common';
 
 const {  components: { NewsItem, PaginationComponent } } = Common;
 
-class NewsComponent extends Component{
-
-
+class NewsComponent extends Component {
+    // eslint-disable-next-line
     handleChangePage = (i) => {
         this.props.handleChangePage(i);
-    }
+    };
 
-    render(){
+    render() {
         const { page, filteredNews} = this.props;
         return (
             <section className={css(styles.flex)}>

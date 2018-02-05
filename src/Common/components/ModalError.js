@@ -1,29 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, css } from 'aphrodite/no-important';
 
-class ModalError extends Component{
-    componentWillReceiveProps(props){
-        if(props.active){
-            this.timer = setTimeout(() => {
-                this.props.toggleModal(false);
-            }, 2000);
-        }
-    }
-
-    componentWillUnmount(){
-        clearTimeout(this.timer);
-    }
-
-    render(){
-        const { active } = this.props;
-        return (
-            <div className={css(styles.modalWrapper) + ` ${active ? css(styles.isActive) : null}`}>
-                <p>Something went wrong</p>
-            </div>
-        )
-    }
-}
-
 const styles = StyleSheet.create({
     modalWrapper: {
         position: 'absolute',
@@ -45,5 +22,29 @@ const styles = StyleSheet.create({
         right: 40
     }
 });
+
+class ModalError extends Component {
+    componentWillReceiveProps(props) {
+        if (props.active) {
+            this.timer = setTimeout(() => {
+                this.props.toggleModal(false);
+            }, 2000);
+        }
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.timer);
+    }
+
+    render() {
+        const { active } = this.props;
+        return (
+            <div className={css(styles.modalWrapper) +
+                ` ${active ? css(styles.isActive) : null}`}>
+                <p>Something went wrong</p>
+            </div>
+        );
+    }
+}
 
 export default ModalError;

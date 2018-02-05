@@ -1,13 +1,5 @@
-import React, { Component } from 'react';
-import {StyleSheet, css} from "aphrodite/no-important";
-
-const Preloader = () => {
-    return (
-        <span className={css(styles.rainbow) + ' ' + css(styles.default)}></span>
-    );
-};
-
-
+import React from 'react';
+import {StyleSheet, css} from 'aphrodite/no-important';
 
 const styles = StyleSheet.create({
 
@@ -19,22 +11,22 @@ const styles = StyleSheet.create({
     },
     rainbow: {
         animationName: {
-            '0%' : {
+            '0%': {
                 backgroundColor: '#75EB00'
             },
-            '20%' : {
+            '20%': {
                 backgroundColor: '#53BBF4'
             },
-            '40%' : {
+            '40%': {
                 backgroundColor: '#FF85CB'
             },
-            '60%' : {
+            '60%': {
                 backgroundColor: '#FF432E'
             },
-            '80%' : {
+            '80%': {
                 backgroundColor: '#FFAC00'
             },
-            '1000%' : {
+            '1000%': {
                 backgroundColor: '#982395'
             }
         },
@@ -45,4 +37,8 @@ const styles = StyleSheet.create({
 
 });
 
-export default Preloader
+const Preloader = () => <span
+                            className={css(styles.rainbow) + ' ' + css(styles.default)}
+                        >
+                        </span>;
+export default Preloader;

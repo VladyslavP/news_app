@@ -3,12 +3,10 @@ import { Switch } from 'react-router';
 
 import Main from './Components/components/MainRouter';
 
-
 class RootComponent extends Component {
   render() {
     return (
-
-        <div className="App">
+        <div className='App'>
             <Switch>
                 <Main/>
             </Switch>

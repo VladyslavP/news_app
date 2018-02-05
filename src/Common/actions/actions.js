@@ -1,32 +1,24 @@
 import axios from 'axios';
 import config from '../../Utils';
 
-
 export function actionCreator(actionType, data = {}) {
-    console.log(actionType);
     return {
         type: actionType,
         ...data
     };
 }
 
-
-function dataAction(method, url, params = null, headers = {}) {
-    console.log(config);
+function dataAction(method, url, params = null) {
     const conf = {
         url: url ? (config.webApi + url + 'apiKey=' + config.key) : (config.webApi + '/sources?apiKey=' + config.key),
-        method: method,
         params: method === 'get' ? params : null,
-        data: method === 'put' || method === 'post' || method === 'patch' || method === 'delete' ? params : null
+        data: method === 'put' || method === 'post' || method === 'patch' || method === 'delete' ? params : null,
+        method
     };
 
     return axios.request(conf)
-        .then(response => {
-            return Promise.resolve(response.data);
-        })
-        .catch((error) => {
-            return Promise.reject(error);
-        });
+        .then(response => Promise.resolve(response.data))
+        .catch(error => Promise.reject(error));
 }
 
 export function getDataAction(url, params = null, headers = {}) {

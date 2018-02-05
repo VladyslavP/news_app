@@ -1,11 +1,10 @@
-import * as actionType from '../actionTypes'
+import * as actionType from '../actionTypes';
 
-
-function dictionary( state = [], action) {
+function dictionary(state = [], action) {
     switch (action.type) {
         case actionType.SUCCESS_GET_NEWS:
             return [...action.news];
-        default :
+        default:
             return state;
     }
 }

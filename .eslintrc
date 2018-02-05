@@ -1,5 +1,8 @@
 {
-  "extends": "airbnb-base",
+  "extends": [
+    "airbnb-base",
+    "plugin:react/recommended"
+  ],
   "env": {
     "browser": false
   },
@@ -7,5 +10,27 @@
     "sourceType": "module"
   },
   "rules": {
+    "indent": ["off", 4],
+    "comma-dangle": "off",
+    "class-methods-use-this": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "object-curly-spacing": "off",
+    "no-case-declarations": "off",
+    "import/no-named-default": "off",
+    "object-curly-newline": "off",
+    "react/prop-types": "off",
+    "prefer-template": "off",
+    "consistent-return": "off",
+    "function-paren-newline": "off",
+    "import/prefer-default-export": "off",
+    "yoda": "off"
+  },
+  "globals": {
+    "window": true,
+    "fetch": true,
+    "navigator": true,
+    "document": true,
+    "localStorage": true
   }
 }

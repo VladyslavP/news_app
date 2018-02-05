@@ -3,5 +3,4 @@ const config = {
     webApi: 'https://newsapi.org/v2'
 };
 
-
 export default config;
