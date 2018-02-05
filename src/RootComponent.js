@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Switch } from 'react-router';
 
-import Main from './Components/components/MainRouter';
+import Main from './News/components/MainRouter';
 
 class RootComponent extends Component {
   render() {

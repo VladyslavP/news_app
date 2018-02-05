@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import {routerReducer} from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
 
-import Components from './Components';
+import Components from './News';
 
 const rootReducer = combineReducers({
     routing: routerReducer,

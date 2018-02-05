@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, css } from 'aphrodite/no-important';
 
-import {defaultImage} from '../images';
-import ImageLoader from './ImageLoader';
+import {defaultImage} from '../../Common/images/index';
+import ImageLoader from '../../Common/components/ImageLoader';
 
 const styles = StyleSheet.create({
     wrapper: {
